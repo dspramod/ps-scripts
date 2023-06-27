@@ -13,7 +13,7 @@ function getKeyVaultSecrets([string]$subscriptionDet, [string]$keyVaultIdDet, [s
             Write-Output "$secretName;$secretId"
             $secretValue = (az keyvault secret show --subscription "$subscriptionDet" --id $secretId --query  "{value:value}" --output tsv)
             Write-Output "Secret Value: $secretValue"
-            $newVaultName = "kvietv" + $keyVaultTeamName + "deveuweait1"
+            $newVaultName = "kvietv" + $keyVaultTeamName + "$keyVaultPrefix"
             $setSecret = (az keyvault secret set  --subscription "$subscriptionDet" --name $secretName --vault-name $newVaultName --value $secretValue)
         }
     }
@@ -23,13 +23,14 @@ function getKeyVaults([string]$subscription){
     $keyvaults = (az keyvault list --subscription "$subscription" --query  "[].{id:id, name:name} | [?contains(name,'kvietvblh')] | [?contains(name, 'aiteuwe1')]" --output tsv)
 
     $keyvaults | foreach {
+        $keyVaultPrefix = "kvprefix"
         $keyvault = $_
         Write-Output "Processing Key Vault $keyvault"
         $keyvaultItemSlit = $keyvault -split "`t"
         $keyVaultId = $keyvaultItemSlit[0]
         $keyVaultName = $keyvaultItemSlit[1]
-        $keyVaultTempName1 = $keyVaultName -replace 'kvietv',''
-        $keyVaultTeamName = $keyVaultTempName1 -replace 'aiteuwe1',''
+        $keyVaultTempName1 = $keyVaultName -replace 'foobar',''
+        $keyVaultTeamName = $keyVaultTempName1 -replace 'barfoo',''
         getKeyVaultSecrets $subscription $keyVaultId $keyVaultName $keyVaultTeamName
     }
 }
